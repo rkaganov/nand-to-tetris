@@ -1,0 +1,65 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/02/ALU.hdl
+
+/**
+ * The ALU.  Computes a pre-defined set of functions out = f(x,y)
+ * where x and y are two 16-bit inputs. The function f is selected 
+ * by a set of 6 control bits denoted zx, nx, zy, ny, f, no.
+ * The ALU operation can be described using the following pseudocode:
+ *     if zx=1 set x = 0       // 16-bit zero constant
+ *     if nx=1 set x = !x      // Bit-wise negation
+ *     if zy=1 set y = 0       // 16-bit zero constant
+ *     if ny=1 set y = !y      // Bit-wise negation
+ *     if f=1  set out = x + y // Integer 2's complement addition
+ *     else    set out = x & y // Bit-wise And
+ *     if no=1 set out = !out  // Bit-wise negation
+ *
+ * In addition to computing out, the ALU computes two 1-bit outputs:
+ *     if out=0 set zr = 1 else zr = 0 // 16-bit equality comparison
+ *     if out<0 set ng = 1 else ng = 0 // 2's complement comparison
+ */
+
+CHIP ALU {
+
+    IN  // 16-bit inputs:
+        x[16], y[16],
+        // Control bits:
+        zx, // Zero the x input
+        nx, // Negate the x input
+        zy, // Zero the y input
+        ny, // Negate the y input
+        f,  // Function code: 1 for add, 0 for and
+        no; // Negate the out output
+
+    OUT // 16-bit output
+        out[16],
+
+        // ALU output flags
+        zr, // 1 if out=0, 0 otherwise
+        ng; // 1 if out<0, 0 otherwise
+
+    PARTS:
+    Mux16(a[0..15]=x, b[0..15]=false, sel=zx, out[0..15]=x1);
+    Mux16(a[0..15]=y, b[0..15]=false, sel=zy, out[0..15]=y1);
+
+    Not16(in[0..15]=x1, out[0..15]=xcomp);
+    Mux16(a[0..15]=x1, b[0..15]=xcomp, sel=nx, out[0..15]=x2);
+
+    Not16(in[0..15]=y1, out[0..15]=ycomp);
+    Mux16(a[0..15]=y1, b[0..15]=ycomp, sel=ny, out[0..15]=y2);
+    
+    And16(a[0..15]=x2, b[0..15]=y2, out[0..15]=xandy);
+    Add16(a[0..15]=x2, b[0..15]=y2, out[0..15]=xaddy);
+    Mux16(a[0..15]=xandy, b[0..15]=xaddy, sel=f, out[0..15]=out1);
+
+    Not16(in[0..15]=out1, out[0..15]=outcomp);
+    Mux16(a[0..15]=out1, b[0..15]=outcomp, sel=no, out[0..15]=out, out[0..15]=out2, out[15]=ng, out[15]=ng1);	        
+    
+    Add16(a[0..15]=out2, b[0..15]=true, out[0..15]=out3, out[15]=out315);
+    Not(in=ng1, out=ngcomp);
+    And(a=ngcomp, b=out315, out=zr);
+    
+    
+}
