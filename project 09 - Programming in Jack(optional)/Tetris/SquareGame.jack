@@ -1,0 +1,66 @@
+class SquareGame {
+    field Square square;
+    field int direction; // 0=none,1=down,2=left,3=right
+
+    constructor SquareGame new() {
+        return this;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method void run() {
+        var char key;
+        var boolean exit;
+	var int pattern;
+        let exit = false;
+	let pattern = 1;
+
+        while (~exit) {
+            let square = Square.new(pattern);
+	    pattern=(pattern%3)+1;
+            while (key = 0) {
+                let key = Keyboard.keyPressed();
+                do moveSquare();
+            }
+
+            if (key = 81) {
+                let exit = true;
+            }
+            if (key = 133) {
+                let direction = 1;
+            }
+            if (key = 130) {
+                let direction = 2;
+            }
+            if (key = 132) {
+                let direction = 3;
+            }
+
+            // waits for the key to be released.
+            while (~(key = 0)) {
+                let key = Keyboard.keyPressed();
+                do moveSquare();
+            }
+        }
+            
+        return;
+	}
+
+    method void moveSquare() {
+        if (direction = 1) {
+            do square.moveDown();
+        }
+        if (direction = 2) {
+            do square.moveLeft();
+        }
+        if (direction = 3) {
+            do square.moveRight();
+        }
+
+        do Sys.wait(5); // Delays the next movement.
+        return;
+    }
+}
