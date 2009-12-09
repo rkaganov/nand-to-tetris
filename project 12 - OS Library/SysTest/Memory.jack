@@ -1,0 +1,98 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/12/Memory.jack
+
+/**
+ * Memory operations library.
+ */ 
+class Memory {
+    static Array freeList;
+
+    /** Initializes memory parameters. */
+    function void init() {
+	let freeList=2048;
+	let freeList[0]=-1;
+	let freeList[1]=16384-2048-1;
+	return;
+    }
+
+    /** Returns the value of the main memory at this address. */
+    function int peek(int address) {
+	var Array memory;
+	let memory=0;
+	if(address>0){
+		return memory[address];
+	}
+	do Sys.error(2);
+	return -1;
+    }
+
+    /** Sets the value of the main memory at this address
+     *  to the given value. */
+    function void poke(int address, int value) {
+	var Array memory;
+	let memory=0;
+	if(address>0){
+		let memory[address]=value;
+	}
+	else{
+		do Sys.error(2);
+	}
+	return;
+    }
+
+    /** finds and allocates from the heap a memory block of the 
+     *  specified size and returns a reference to its base address. */
+    function int alloc(int size) {
+	var Array cur, best, prev, prevToBest;
+	var int curSize, bestSize, flag;
+	let prev=freeList;
+	let cur=freeList;
+	let bestSize=16384-2048-1;
+	let flag=0;
+	while(~(cur=-1)){
+		if(~((cur[1]<size)|(cur[1]>bestSize))){
+			let prevToBest=prev;
+			let bestSize=cur[1];
+			let best=cur;
+			let flag=1;
+		}
+		let prev=cur;
+		let cur=cur[0];
+	}
+	if(flag=1){
+		let cur=best+size+1;
+		if(bestSize=size){
+			let cur=best[0];
+		}
+		if(~(best=freeList)){
+			let prevToBest[0]=cur;
+		}
+		if(~(bestSize=size)){
+			let cur[0]=best[0];
+			let cur[1]=cur[0]-(cur+1);
+			if(cur[0]=-1){
+				let cur[1]=16384-(cur+1);
+			}
+		}
+		if(best=freeList){
+			let freeList=cur;
+		}	
+		let best[0]=size;
+		return (best+1);
+	}
+	do Sys.error(1);
+	return -1;
+    }
+
+    /** De-allocates the given object and frees its space. */
+    function void deAlloc(int object) {
+	var Array cur;
+	let cur=object-1;
+	let cur[1]=object[-1];
+	let cur[0]=freeList;
+	let freeList=cur;
+	return;
+    }    
+}
