@@ -1,0 +1,26 @@
+	@R2
+	M=0
+	@R1
+	D=M
+	@INFINITE_LOOP
+	D;JLE
+	@counter
+	M=D
+	@R0
+	D=M
+	@R2
+	M=D
+(LOOP)
+	@counter
+	MD=M-1
+	@INFINITE_LOOP
+	D;JLE
+	@R0
+	D=M
+	@R2
+	M=D+M
+	@LOOP
+	0;JMP
+(INFINITE_LOOP)
+	@INFINITE_LOOP
+	0;JMP
