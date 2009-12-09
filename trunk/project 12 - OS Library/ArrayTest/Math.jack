@@ -1,0 +1,159 @@
+// This file is part of the materials accompanying the book 
+// "The Elements of Computing Systems" by Nisan and Schocken, 
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/12/Math.jack
+
+/**
+ * A basic math library.
+ */
+class Math {
+    
+    static Array bitVector;
+    static int qy;
+
+    /** Initializes the library. */
+    function void init() {
+	var int bit, count; 
+	let bitVector=Array.new(15);
+	let bit=1;
+	while(count < 15){
+		let bitVector[count]=bit;
+		let bit=bit+bit;
+		let count=count+1;
+	}
+	return;
+    }
+
+    /** Returns the absolute value of x. */
+    function int abs(int x) {
+	if(x<0){
+		return -x;
+	}
+	else{
+		return x;
+	}
+    }
+
+    /** Returns the jth bit of x */
+    function int bit(int x, int j) {
+	var int sum, i, flag;
+	if(x<bitVector[j]){
+		return 0;
+	}
+	if(x=bitVector[j]){
+		return 1;
+	}
+	let i=14;
+	while(~(i<j)){
+		if(~((bitVector[i]+sum)>x)){
+			let sum=bitVector[i]+sum;
+			let flag=1;
+		}
+		else{
+			let flag=0;
+		}
+		let i=i-1;
+	}
+	return flag;	
+    }
+
+
+    /** Returns the product of x and y. */
+    function int multiply(int x, int y) {
+	var int sum, shiftedX, flag, j;
+	if((x<0)|(y<0)){
+		if(~((x<0)&(y<0))){
+			let flag=1;
+		}
+		let x=Math.abs(x);
+		let y=Math.abs(y);
+	}
+	if((x=0)|(y=0)){
+		return 0;
+	}
+	let shiftedX=x;
+	while((j<15)&(~(shiftedX<0))){
+		if(Math.bit(y,j)=1){
+			let sum=sum+shiftedX;
+		}
+		let shiftedX=shiftedX+shiftedX;
+		let j=j+1;
+	}
+	if(flag=1){
+		return -sum;
+	}
+	return sum;
+    }
+
+    /** Returns the integer part of x/y. */
+    function int divide(int x, int y) {
+	var int q,flag;
+	if((x<0)|(y<0)){
+		if(~((x<0)&(y<0))){
+			let flag=1;
+		}
+		let x=Math.abs(x);
+		let y=Math.abs(y);
+	}
+	if(y>x){
+		let qy=0;
+		return 0;
+	}
+	if((y+y)<0){
+		let qy=y;
+		if(flag=1){
+			return -(q+q+1);
+		}
+		return (q+q+1);
+	}
+	let q=Math.divide(x,y+y);
+	if((x-qy)<y){
+		if(flag=1){
+			return -(q+q);
+		}
+		return (q+q);
+	}
+	else{
+		let qy=qy+y;
+		if(flag=1){
+			return -(q+q+1);
+		}
+		return (q+q+1);
+	}
+    }
+
+    /** Returns the integer part of the square root of x. */
+    function int sqrt(int x) {
+	var int y,j,z,p;
+	let j=7;
+	while(~(j<0)){
+		let z=bitVector[j]+y;
+		let p=z*z;
+		if(~((p>x)|(z<0)|(p<0))){
+			let y=bitVector[j]+y;
+		}
+		let j=j-1;
+	}
+	return y;
+    }
+
+    /** Returns the greater number. */
+    function int max(int a, int b) {
+	if(a<b){
+		return b;
+	}
+	else{
+		return a;
+	}
+    }
+
+    /** Returns the smaller number. */
+    function int min(int a, int b) {
+	if(a<b){
+		return a;
+	}
+	else{
+		return b;
+	}
+    }
+}
